@@ -1,0 +1,17 @@
+URL to fetch list of equity: https://archives.nseindia.com/content/equities/EQUITY_L.csv
+URL to get trade info: https://www.nseindia.com/api/quote-equity?symbol=INFY&section=trade_info
+URL to fetch trade info: https://www.nseindia.com/api/quote-equity?symbol=INFY
+URL to download historic data: https://www.nseindia.com/api/historical/cm/equity?symbol=INFY&series=[%22EQ%22]&from=26-09-2020&to=26-12-2020&csv=true
+Download hostoric BSE data: https://www.bseindia.com/download/BhavCopy/Equity/EQ010217_CSV.ZIP
+BSE market cap: https://api.bseindia.com/BseIndiaAPI/api/StockTrading/w?flag=&quotetype=EQ&scripcode=532540
+BSE current price: https://api.bseindia.com/BseIndiaAPI/api/getScripHeaderData/w?Debtflag=&scripcode=532540&seriesid=
+BSE volume: https://api.bseindia.com/BseIndiaAPI/api/StockReachGraph/w?scripcode=532540&flag=6M&fromdate=&todate=&seriesid=
+
+nse:
+code, name, listing date, marketcap
+
+bse:
+scrip number, name, listing date, marketcap
+
+data:
+open, high, low, close, volume
