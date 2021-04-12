@@ -1,10 +1,17 @@
 import csv
+import os
 
 CSV_FIELDS = ['date', 'open', 'high', 'low', 'close', 'volume']
 TA_CSV_FIELDS = ['date', 'UP', 'DOWN', 'RSI', 'EMA_50', 'EMA_21', 'EMA_9', 'MACD', 'MACD_SIG', 'VOL_EMA', 'P_CHANGE']
 
+LOG_ENABLED = os.getenv('LOG_DEV', False)
+
+def log(message, error = False):
+    if (error == True or LOG_ENABLED != False):
+        print(message)
+
 def rsi(datafile, n):
-    print('Calculating RSI for ' + datafile)
+    log('Calculating RSI for ' + datafile)
     data = {}
     
     with open(datafile, 'r') as f_handle:
@@ -42,12 +49,12 @@ def rsi(datafile, n):
                 else:
                     data[index]['RSI'] = round(100 - (100/(1+(sum_up/sum_down))), 4)
     
-    print('RSI calculation completed for ' + datafile)
+    log('RSI calculation completed for ' + datafile)
     return data
 
 
 def moving_average(datafile, field, n):
-    print('Calculating ' + str(n) + ' days Exponential Moving Average for ' + field + ' field')
+    log('Calculating ' + str(n) + ' days Exponential Moving Average for ' + field + ' field')
     data = {}
     
     with open(datafile, 'r') as f_handle:
@@ -68,7 +75,7 @@ def moving_average(datafile, field, n):
             else:
                 data[index]['EMA'] = 'NA'
                 
-    print('Calculation of ' + str(n) + ' days Exponential Moving Average for ' + field + ' field: Completed')
+    log('Calculation of ' + str(n) + ' days Exponential Moving Average for ' + field + ' field: Completed')
     return data
 
 
@@ -81,7 +88,7 @@ def convert_values_to_float(csv_row):
 
 
 def macd(datafile, low_n, high_n, signal):
-    print('Calculating MACD('+str(high_n)+', '+str(low_n)+', '+str(signal)+') for ' + datafile)
+    log('Calculating MACD('+str(high_n)+', '+str(low_n)+', '+str(signal)+') for ' + datafile)
     if (low_n > high_n):
         high_n += low_n
         low_n = high_n - low_n
@@ -105,12 +112,12 @@ def macd(datafile, low_n, high_n, signal):
 
         i += 1
     
-    print('Calculation of MACD('+str(high_n)+', '+str(low_n)+', '+str(signal)+') for ' + datafile + ' Completed')
+    log('Calculation of MACD('+str(high_n)+', '+str(low_n)+', '+str(signal)+') for ' + datafile + ' Completed')
     return calculate_macd_signal(data, high_n, signal)
     
 
 def calculate_macd_signal(data, high_n, signal):
-    print('Generating signal data for previously computed MACD data')
+    log('Generating signal data for previously computed MACD data')
     i = 0
     sum_macd = 0
     
@@ -131,12 +138,12 @@ def calculate_macd_signal(data, high_n, signal):
 
         i += 1
 
-    print('Signal data for previously computed MACD data generated')
+    log('Signal data for previously computed MACD data generated')
     return data
 
 
 def percent_change(datafile):
-    print('Calculating %change for ' + datafile)
+    log('Calculating %change for ' + datafile)
     with open(datafile, 'r') as f_handle:
         reader = csv.DictReader(f_handle, CSV_FIELDS)
         prev_close = -1
@@ -154,12 +161,12 @@ def percent_change(datafile):
             data[index]['PCHANGE'] = round(100*(row['close'] - prev_close)/prev_close, 4)
             prev_close = row['close']
 
-        print('Calculation completed for %change for ' + datafile)
+        log('Calculation completed for %change for ' + datafile)
         return data
 
 
 def calculate_ta(datafile):
-    print('Starting calculation of Technical Analysis data for ' + datafile)
+    log('Starting calculation of Technical Analysis data for ' + datafile)
     rsi_14 = rsi(datafile, 14)
     ma_50 = moving_average(datafile, 'close', 50)
     ma_21 = moving_average(datafile, 'close', 21)
@@ -179,12 +186,12 @@ def calculate_ta(datafile):
         data[index]['VOL_EMA'] = vma_10[index]['EMA']
         data[index]['P_CHANGE'] = pchange[index]['PCHANGE']
 
-    print('Calculation of Technical Analysis data completed for ' + datafile)
+    log('Calculation of Technical Analysis data completed for ' + datafile)
     return data
 
 
 def write_ta_data_to_file(data, destination_file):
-    print('Writing Technical Analysis data to ' + destination_file)
+    log('Writing Technical Analysis data to ' + destination_file)
     with open(destination_file, 'w') as f_handle:
         writer = csv.DictWriter(f_handle, TA_CSV_FIELDS)
         writer.writeheader()
